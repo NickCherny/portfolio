@@ -1,7 +1,7 @@
 const ContactForm = () => {
   return (
     <div>
-      <h1>Contact</h1>
+      <h1 className="mt-4">Contact</h1>
       <form>
         <input type="text" placeholder="Name" />
         <input type="email" placeholder="Email" />
