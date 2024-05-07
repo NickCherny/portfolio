@@ -1,1 +1,1 @@
-export { useBinnary } from "./useBanaryHook";
+export { useBinnary } from './useBanaryHook';

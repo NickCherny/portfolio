@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { ProjectsProps } from "./types";
+import { FC } from 'react';
+import { ProjectsProps } from './types';
 
-import { ProjectDetails } from "./componentns/ProjectDetails";
+import { ProjectDetails } from './componentns/ProjectDetails';
 
 export const Projects: FC<ProjectsProps> = ({ items }) => {
   return (

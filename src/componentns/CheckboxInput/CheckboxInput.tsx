@@ -1,5 +1,5 @@
-import { FC, SyntheticEvent } from "react";
-import { CheckboxInputProps } from "./types";
+import { FC, SyntheticEvent } from 'react';
+import { CheckboxInputProps } from './types';
 
 export const CheckboxInput: FC<CheckboxInputProps> = ({
   name,

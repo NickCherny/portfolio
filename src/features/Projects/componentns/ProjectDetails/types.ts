@@ -1,4 +1,4 @@
-import { PastProject, Technology, WithImage } from "~/types/schema";
+import { PastProject, Technology, WithImage } from '~/types/schema';
 
 export type ProjectDetailsProps = {
   data: PastProject;

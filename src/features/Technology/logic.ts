@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { StrapiData, Technology } from "~/types/schema";
-import { convertHEXToRGB } from "~/utils/ui/color.utils";
-import { useBinnary } from "~/utils/hooks";
-import { CheckboxInput } from "~/componentns/CheckboxInput";
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { StrapiData, Technology } from '~/types/schema';
+import { convertHEXToRGB } from '~/utils/ui/color.utils';
+import { useBinnary } from '~/utils/hooks';
+import { CheckboxInput } from '~/componentns/CheckboxInput';
 
-import { TechnologyProps } from "./types";
+import { TechnologyProps } from './types';
 import {
   palette,
   LANGUAGE_CODES,
@@ -12,10 +12,10 @@ import {
   FRONTEND_TECHNOLOGIES,
   BACKEND_TECHNOLOGIES,
   MOBILE_TECHNOLOGY,
-} from "./technology.constants";
+} from './technology.constants';
 
 const getBackgroundColor = (color: string) =>
-  `rgba(${convertHEXToRGB(color).join(", ")}, 0.4)`;
+  `rgba(${convertHEXToRGB(color).join(', ')}, 0.4)`;
 
 export const useTechnologyLogic = ({ items }: TechnologyProps) => {
   const { value: isFrontendVisible, toggle: toggleFrontendVisiability } =
@@ -42,17 +42,17 @@ export const useTechnologyLogic = ({ items }: TechnologyProps) => {
       ),
       datasets: [
         {
-          label: "Level",
+          label: 'Level',
           data: filteredTechnology.map(
             ({ attributes }: StrapiData<Technology>) => attributes.level
           ),
           backgroundColor: filteredTechnology.map(
             ({ attributes }: StrapiData<Technology>) =>
-              getBackgroundColor(palette[attributes.code.name]) ?? "grey"
+              getBackgroundColor(palette[attributes.code.name]) ?? 'grey'
           ),
           borderColor: filteredTechnology.map(
             ({ attributes }: StrapiData<Technology>) =>
-              palette[attributes.code.name] ?? "black"
+              palette[attributes.code.name] ?? 'black'
           ),
           borderWidth: 1,
           barPercentage: 0.7,

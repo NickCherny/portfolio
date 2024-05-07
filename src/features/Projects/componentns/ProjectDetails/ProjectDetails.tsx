@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { FC, useMemo } from "react";
-import Markdown from "react-markdown";
-import cn from "classnames";
-import dayjs from "dayjs";
+import Image from 'next/image';
+import { FC, useMemo } from 'react';
+import Markdown from 'react-markdown';
+import cn from 'classnames';
+import dayjs from 'dayjs';
 
-import { WithImage, Technology } from "~/types/schema";
-import { useBinnary } from "~/utils/hooks";
-import { getImageUrl } from "~/utils/ui/image.utils";
-import { ProjectDetailsProps, ListOfTechnologyProps } from "./types";
+import { WithImage, Technology } from '~/types/schema';
+import { useBinnary } from '~/utils/hooks';
+import { getImageUrl } from '~/utils/ui/image.utils';
+import { ProjectDetailsProps, ListOfTechnologyProps } from './types';
 
-const DATE_FORMAT = "YYYY MMM";
+const DATE_FORMAT = 'YYYY MMM';
 
 const ListOfTechnology: FC<ListOfTechnologyProps> = ({ items }) => {
   return (
@@ -44,7 +44,7 @@ export const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
       `${dayjs(data.start_date).format(DATE_FORMAT)} – ${
         dayjs(data.end_date).isValid()
           ? dayjs(data.end_date).format(DATE_FORMAT)
-          : "Present"
+          : 'Present'
       }`,
     [data?.start_date, data.end_date]
   );
@@ -65,9 +65,9 @@ export const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
         )}
       </div>
       <div
-        className={cn("overflow-hidden", {
-          "h-0": !isDetailsVisible,
-          "h-auto": isDetailsVisible,
+        className={cn('overflow-hidden', {
+          'h-0': !isDetailsVisible,
+          'h-auto': isDetailsVisible,
         })}
       >
         <Markdown className="text-sm font-light tracking-wider">

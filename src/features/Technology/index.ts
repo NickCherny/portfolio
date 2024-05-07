@@ -1,1 +1,1 @@
-export { TechnologyChart } from "./Technology";
+export { TechnologyChart } from './Technology';

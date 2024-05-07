@@ -3,8 +3,8 @@ export const isRGB = (color: string) =>
 
 export function parseColorToRGB(color: string): number[] {
   return color
-    .replace(/\(|\)|rgb|rgba/gi, "")
-    .split(",")
+    .replace(/\(|\)|rgb|rgba/gi, '')
+    .split(',')
     .map((item) => item.trim())
     .map((item) => parseInt(item));
 }
@@ -21,7 +21,7 @@ export function convertRGBToHEX(color: string): string {
 }
 
 export function convertHEXToRGB(color: string): number[] {
-  const value = color[0] === "#" ? color.substring(1) : color;
+  const value = color[0] === '#' ? color.substring(1) : color;
 
   if (value.length === 3) {
     return [
@@ -41,7 +41,7 @@ export function convertHEXToRGB(color: string): number[] {
 export function makeColorOpacityOn(color: string, opacity: number): string {
   const rgb = convertHEXToRGB(color);
 
-  return `rgba(${rgb.join(", ")}, ${opacity})`;
+  return `rgba(${rgb.join(', ')}, ${opacity})`;
 }
 
 export function makeDarkerOn(color: string, percent: number): string {

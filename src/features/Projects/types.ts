@@ -1,5 +1,10 @@
-import { PastProject } from "~/types/schema";
+import { ApiTechnologyTechnology } from "~/types/contentTypes";
+
+type PastProjectTechnology = {
+  name: string;
+  logo: ApiTechnologyTechnology["attributes"]["logo"];
+};
 
 export type ProjectsProps = {
-  items: PastProject[];
+  items: PastProjectTechnology[] | undefined;
 };

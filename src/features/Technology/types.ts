@@ -1,4 +1,4 @@
-import { PastProject, GetListOfTechnologiesResponse } from "~/types/schema";
+import { APIResponseCollection } from "~/types/strapi";
 
 type PastProjectsTechnology = {
   startDate: string;
@@ -7,6 +7,6 @@ type PastProjectsTechnology = {
 };
 
 export type TechnologyProps = {
-  items: GetListOfTechnologiesResponse;
+  items: APIResponseCollection<"api::technology.technology">;
   pastProjects: PastProjectsTechnology[];
 };

@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  StrapiResponse,
-  DescriptionResponse,
-  PastProjectsResponse,
-} from "~/types/schema";
+import { APIResponse, APIResponseCollection } from "~/types/strapi";
 
 const apiHost = "http://localhost:1337";
 
@@ -12,7 +8,9 @@ const commonHeaders = {
   "Content-Type": "application/json; charset=utf-8",
 };
 
-export async function getDescription() {
+export async function getDescription(): Promise<
+  APIResponse<"api::description.description">
+> {
   const targetUrl = new URL("/api/description", apiHost);
 
   const res = await fetch(targetUrl, {
@@ -24,10 +22,12 @@ export async function getDescription() {
     throw new Error("Failed to fetch description");
   }
 
-  return res.json() as Promise<StrapiResponse<DescriptionResponse>>;
+  return res.json();
 }
 
-export async function getPastProjects(): Promise<PastProjectsResponse> {
+export async function getPastProjects(): Promise<
+  APIResponseCollection<"api::past-project.past-project">
+> {
   const qParams = new URLSearchParams({
     populate: "technology",
   });
@@ -35,38 +35,56 @@ export async function getPastProjects(): Promise<PastProjectsResponse> {
     `/api/past-projects/?${qParams.toString()}`,
     apiHost
   );
-  try {
-    const res = await fetch(targetUrl, {
-      headers: commonHeaders,
-      cache: "force-cache",
-    });
+  const res = await fetch(targetUrl, {
+    headers: commonHeaders,
+    cache: "force-cache",
+  });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch past projects");
-    }
-
-    return res.json() as Promise<PastProjectsResponse>;
-  } catch (e) {
-    console.log("Failed to fetch past projects");
-    console.error(e);
-    return { data: [] };
+  if (!res.ok) {
+    throw new Error("Failed to fetch past projects");
   }
+
+  return res.json();
 }
 
-export async function getTechnologies() {
+export async function getTechnologies(): Promise<
+  APIResponseCollection<"api::technology.technology">
+> {
   const qParams = new URLSearchParams();
   qParams.append("populate[0]", "logo");
   qParams.append("populate[1]", "logo.image");
   qParams.append("populate", "code");
 
-  const technologies = await fetch(
+  const res = await fetch(
     new URL(`/api/technologies/?${qParams.toString()}`, apiHost).toString(),
     {
       cache: "no-cache",
     }
-  )
-    .then((res) => res.json())
-    .catch(console.error);
+  );
 
-  return technologies;
+  if (!res.ok) {
+    throw new Error("Failed to fetch technologies");
+  }
+
+  return res.json();
+}
+
+export async function getEducations(): Promise<
+  APIResponseCollection<"api::education.education">
+> {
+  const qParams = new URLSearchParams();
+  qParams.append("populate", "subject");
+
+  const res = await fetch(
+    new URL(`/api/educations?${qParams.toString()}`, apiHost).toString(),
+    {
+      cache: "force-cache",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch educations");
+  }
+
+  return await res.json();
 }
