@@ -1,0 +1,1 @@
+export { StudySubjectsChart } from "./StudySubjectsChart";

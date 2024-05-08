@@ -1,5 +1,9 @@
 import { APIResponseCollection } from "~/types/strapi";
 
-export type EducationsProps = {
+export type InstitutionPalette = {
+  backgroundColor: string;
+};
+
+export type StudySubjectsChartProps = {
   items: APIResponseCollection<"api::education.education">;
 };
