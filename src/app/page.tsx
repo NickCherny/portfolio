@@ -3,11 +3,13 @@ import { Summary } from "~/features/summary";
 import { TechnologyChart } from "~/features/Technology";
 import { Projects } from "~/features/Projects";
 import { Eductaions } from "~/features/Educations";
+import { ContactInfo } from "~/features/Contact";
 import {
   getDescription,
   getTechnologies,
   getPastProjects,
   getEducations,
+  getContactInfo,
 } from "~/utils/api";
 
 export default async function Home() {
@@ -15,8 +17,7 @@ export default async function Home() {
   const technologies = await getTechnologies();
   const pastProjects = await getPastProjects();
   const eductions = await getEducations();
-
-  console.log(eductions.data[0].attributes);
+  const contactData = await getContactInfo();
 
   const projects = pastProjects.data.map(({ attributes }) => {
     return {
@@ -52,6 +53,7 @@ export default async function Home() {
       />
       <Projects items={projects as any} />
       <Eductaions items={eductions} />
+      <ContactInfo data={contactData} />
     </main>
   );
 }

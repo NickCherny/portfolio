@@ -88,3 +88,23 @@ export async function getEducations(): Promise<
 
   return await res.json();
 }
+
+export async function getContactInfo(): Promise<
+  APIResponse<"api::contact.contact">
+> {
+  const qParams = new URLSearchParams();
+  qParams.append("populate", "social");
+
+  const res = await fetch(
+    new URL(`/api/contact?${qParams.toString()}`, apiHost).toString(),
+    {
+      cache: "force-cache",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch contact info");
+  }
+
+  return await res.json();
+}
