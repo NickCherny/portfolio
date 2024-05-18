@@ -1,65 +1,50 @@
-"use client";
-
 import { FC } from "react";
-import Chart from "chart.js/auto";
-import { CategoryScale } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import Image from "next/image";
 
-import { CheckboxInput } from "~/componentns/CheckboxInput";
+import { getImageUrl } from "~/utils/ui/image.utils";
 
-import { TechnologyProps } from "./types";
-import { useTechnologyLogic } from "./logic";
+import {
+  TechnologyChart,
+  TechnologyChartProps,
+} from "./components/TechnologyChart";
+import { TechnologyCardProps } from "./types";
 
-Chart.register(CategoryScale);
-
-export const TechnologyChart: FC<TechnologyProps> = (props) => {
-  const {
-    chartData,
-    isFrontendVisible,
-    toggleFrontendVisiability,
-    isBackendVisible,
-    toggleBackendVisiability,
-    isMobileVisible,
-    toggleMobileVisibility,
-  } = useTechnologyLogic(props);
+const TechnologyCard: FC<TechnologyCardProps> = ({ data }) => {
+  const logoUrl = data.attributes.logo?.image?.data.attributes.url;
+  const imageUrl = logoUrl ? getImageUrl(logoUrl) : undefined;
 
   return (
-    <section className="p-8 w-full">
-      <div className="flex flex-row justify-between w-1/4 mb-3">
-        <CheckboxInput
-          name="fr"
-          label="Frontend"
-          value={isFrontendVisible}
-          onChange={toggleFrontendVisiability}
+    <aside className="bg-white px-6 py-3 rounded-md">
+      {imageUrl && (
+        <Image
+          alt=""
+          src={imageUrl}
+          width={32}
+          height={32}
+          className="m-auto mb-3"
         />
-        <CheckboxInput
-          name="be"
-          label="Backend"
-          value={isBackendVisible}
-          onChange={toggleBackendVisiability}
-        />
-        <CheckboxInput
-          name="mobile"
-          label="Mobile stack"
-          value={isMobileVisible}
-          onChange={toggleMobileVisibility}
-        />
+      )}
+      <div>
+        <h2 className="text-sm mb-1 text-slate-700">{data.attributes.copy}</h2>
+        <p className="text-slate-500 text-xs font-light">{data.attributes.info}</p>
       </div>
-      <Bar
-        data={chartData}
-        options={{
-          plugins: {
-            title: {
-              display: true,
-              text: "I have worked with different technologies in web development.",
-            },
-            legend: {
-              display: false,
-            },
-          },
-          indexAxis: "x",
-        }}
-      />
+    </aside>
+  );
+};
+
+export const Technology: FC<TechnologyChartProps> = (props) => {
+  return (
+    <section className="p-8 w-full">
+      <div className="mb-5 flex flex-wrap">
+        {props.items.data.map((itemTechnology) => {
+          return (
+            <div key={itemTechnology.id} className="p-1 max-w-48">
+              <TechnologyCard data={itemTechnology} />
+            </div>
+          );
+        })}
+      </div>
+      <TechnologyChart items={props.items} pastProjects={props.pastProjects} />
     </section>
   );
 };

@@ -1,10 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { StrapiData, Technology } from '~/types/schema';
-import { convertHEXToRGB } from '~/utils/ui/color.utils';
-import { useBinnary } from '~/utils/hooks';
-import { CheckboxInput } from '~/componentns/CheckboxInput';
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { convertHEXToRGB } from "~/utils/ui/color.utils";
+import { useBinnary } from "~/utils/hooks";
 
-import { TechnologyProps } from './types';
+import { TechnologyChartProps } from "./types";
 import {
   palette,
   LANGUAGE_CODES,
@@ -12,12 +10,12 @@ import {
   FRONTEND_TECHNOLOGIES,
   BACKEND_TECHNOLOGIES,
   MOBILE_TECHNOLOGY,
-} from './technology.constants';
+} from "./technology.constants";
 
 const getBackgroundColor = (color: string) =>
-  `rgba(${convertHEXToRGB(color).join(', ')}, 0.4)`;
+  `rgba(${convertHEXToRGB(color).join(", ")}, 0.4)`;
 
-export const useTechnologyLogic = ({ items }: TechnologyProps) => {
+export const useTechnologyLogic = ({ items }: TechnologyChartProps) => {
   const { value: isFrontendVisible, toggle: toggleFrontendVisiability } =
     useBinnary(true);
   const { value: isBackendVisible, toggle: toggleBackendVisiability } =
@@ -29,30 +27,25 @@ export const useTechnologyLogic = ({ items }: TechnologyProps) => {
   const [whiteList, setWhiteList] = useState(LANGUAGE_CODES.concat(CORE_STACK));
   const filteredTechnology = useMemo(
     () =>
-      items?.data?.filter((d: StrapiData<Technology>) =>
-        whiteList.includes(d.attributes.code.name)
+      items?.data?.filter((d) =>
+        whiteList.includes(d.attributes.code!.name!)
       ) ?? [],
     [whiteList, items?.data]
   );
 
   const chartData = useMemo(() => {
     return {
-      labels: filteredTechnology.map(
-        ({ attributes }: StrapiData<Technology>) => attributes.copy
-      ),
+      labels: filteredTechnology.map(({ attributes }) => attributes.copy),
       datasets: [
         {
-          label: 'Level',
-          data: filteredTechnology.map(
-            ({ attributes }: StrapiData<Technology>) => attributes.level
-          ),
+          label: "Level",
+          data: filteredTechnology.map(({ attributes }) => attributes.level),
           backgroundColor: filteredTechnology.map(
-            ({ attributes }: StrapiData<Technology>) =>
-              getBackgroundColor(palette[attributes.code.name]) ?? 'grey'
+            ({ attributes }) =>
+              getBackgroundColor(palette[attributes.code?.name!]) ?? "grey"
           ),
           borderColor: filteredTechnology.map(
-            ({ attributes }: StrapiData<Technology>) =>
-              palette[attributes.code.name] ?? 'black'
+            ({ attributes }) => palette[attributes.code?.name!] ?? "black"
           ),
           borderWidth: 1,
           barPercentage: 0.7,

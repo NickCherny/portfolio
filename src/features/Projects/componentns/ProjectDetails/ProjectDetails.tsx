@@ -1,35 +1,34 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { FC, useMemo } from 'react';
-import Markdown from 'react-markdown';
-import cn from 'classnames';
-import dayjs from 'dayjs';
+import Image from "next/image";
+import { FC, useMemo } from "react";
+import Markdown from "react-markdown";
+import cn from "classnames";
+import dayjs from "dayjs";
 
-import { WithImage, Technology } from '~/types/schema';
-import { useBinnary } from '~/utils/hooks';
-import { getImageUrl } from '~/utils/ui/image.utils';
-import { ProjectDetailsProps, ListOfTechnologyProps } from './types';
+import { useBinnary } from "~/utils/hooks";
+import { getImageUrl } from "~/utils/ui/image.utils";
+import { ProjectDetailsProps, ListOfTechnologyProps } from "./types";
 
-const DATE_FORMAT = 'YYYY MMM';
+const DATE_FORMAT = "YYYY MMM";
 
 const ListOfTechnology: FC<ListOfTechnologyProps> = ({ items }) => {
   return (
     <div className="flex flex-row">
-      {items.map(({ id, alt, logo }: WithImage<Technology>) => {
-        const imageUrl = getImageUrl(logo?.image.data?.attributes?.url);
+      {items.map(({ logo }) => {
+        if (!logo) return null;
+
+        const key = `${logo.id}--${logo?.image.data?.id}`;
 
         return (
-          <div key={`${alt}--${id}`}>
-            {logo?.image.data?.attributes?.url && (
-              <Image
-                alt={logo?.alt}
-                src={imageUrl}
-                width={28}
-                height={28}
-                className="mx-2"
-              />
-            )}
+          <div key={key}>
+            <Image
+              alt={logo?.alt}
+              src={getImageUrl(logo.image.data.attributes.url)}
+              width={28}
+              height={28}
+              className="mx-2"
+            />
           </div>
         );
       })}
@@ -44,7 +43,7 @@ export const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
       `${dayjs(data.start_date).format(DATE_FORMAT)} – ${
         dayjs(data.end_date).isValid()
           ? dayjs(data.end_date).format(DATE_FORMAT)
-          : 'Present'
+          : "Present"
       }`,
     [data?.start_date, data.end_date]
   );
@@ -65,9 +64,9 @@ export const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
         )}
       </div>
       <div
-        className={cn('overflow-hidden', {
-          'h-0': !isDetailsVisible,
-          'h-auto': isDetailsVisible,
+        className={cn("overflow-hidden", {
+          "h-0": !isDetailsVisible,
+          "h-auto": isDetailsVisible,
         })}
       >
         <Markdown className="text-sm font-light tracking-wider">
@@ -75,11 +74,7 @@ export const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
         </Markdown>
         <h3 className="text-sm font-medium pt-3 mb-3">Technologies</h3>
         <div className="mb-8">
-          <ListOfTechnology
-            items={(
-              data.technology as unknown as WithImage<Technology>[]
-            ).filter((d) => Boolean(d?.logo?.image.data?.attributes?.url))}
-          />
+          <ListOfTechnology items={data.technology} />
         </div>
       </div>
     </section>

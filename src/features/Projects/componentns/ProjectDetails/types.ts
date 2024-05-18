@@ -1,9 +1,11 @@
-import { PastProject, Technology, WithImage } from '~/types/schema';
+import { GetValues } from "~/types/strapi";
+import { TechnologyWithLogo } from "~/types/schema";
 
 export type ProjectDetailsProps = {
-  data: PastProject;
+  data: Omit<GetValues<"api::past-project.past-project">, "technology"> &
+    Record<"technology", TechnologyWithLogo[]>;
 };
 
 export type ListOfTechnologyProps = {
-  items: WithImage<Technology>[];
+  items: TechnologyWithLogo[];
 };
