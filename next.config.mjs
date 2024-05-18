@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  rewrites: [
+  rewrites: () => [
     {
       source: "/api/:path*",
       destination: "http://localhost:1337/api/:path*",
