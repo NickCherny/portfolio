@@ -1,10 +1,7 @@
-import { ApiTechnologyTechnology } from "~/types/contentTypes";
-
-type PastProjectTechnology = {
-  name: string;
-  logo: ApiTechnologyTechnology["attributes"]["logo"];
-};
+import { GetValues } from "~/types/strapi";
+import { TechnologyWithLogo } from "~/types/schema";
 
 export type ProjectsProps = {
-  items: PastProjectTechnology[] | undefined;
+  items: (Omit<GetValues<"api::past-project.past-project">, "technology"> &
+    Record<"technology", TechnologyWithLogo[]>)[];
 };
