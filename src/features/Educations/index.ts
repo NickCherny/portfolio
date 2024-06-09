@@ -1,0 +1,1 @@
+export { Eductaions } from "./Educations";
