@@ -1,13 +1,29 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useBinnary } from "~/utils/hooks";
 import { EducationsProps } from "./types";
-import { StudySubjectsChart } from "./componentns/StudySubjectsChart";
+import type { RowData } from "./componentns/StudySubjectsChart/Scatterplot";
+import { Scatterplot } from "./componentns/StudySubjectsChart/Scatterplot";
 
 export const Eductaions: FC<EducationsProps> = ({ items }) => {
   const { value: isSubjectsChartVisible, turnOn: showSubjectsChart } =
     useBinnary(false);
+
+  const chartData = useMemo(() => {
+    return items.data.reduce((acc, { attributes: { name, subject } }) => {
+      return [
+        ...acc,
+        ...subject.map((s) => ({
+          y: s.score,
+          x: s.houres,
+          z: s.score,
+          group: name,
+          subject: s.label,
+        })),
+      ];
+    }, [] as RowData[]);
+  }, [items]);
 
   return (
     <section className="p-8 w-full flex-col justify-start">
@@ -36,7 +52,9 @@ export const Eductaions: FC<EducationsProps> = ({ items }) => {
           Inspect study subjects
         </button>
       )}
-      {isSubjectsChartVisible && <StudySubjectsChart items={items} />}
+      {isSubjectsChartVisible && (
+        <Scatterplot width={800} height={600} data={chartData} />
+      )}
     </section>
   );
 };

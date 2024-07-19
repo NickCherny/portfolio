@@ -33,7 +33,5 @@ export const StudySubjectsChart: FC<StudySubjectsChartProps> = ({
     }, [] as { x: number; y: number; group: string }[]);
   }, [data]);
 
-  console.log(chartData);
-
   return <Scatterplot data={chartData} width={1000} height={400} />;
 };

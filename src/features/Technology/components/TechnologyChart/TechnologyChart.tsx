@@ -1,9 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import Chart from "chart.js/auto";
-import { CategoryScale } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import cn from "classnames";
 
 import { CheckboxInput } from "~/componentns/CheckboxInput";
 import { useBinnary } from "~/utils/hooks/useBanaryHook";
@@ -11,12 +9,10 @@ import { useBinnary } from "~/utils/hooks/useBanaryHook";
 import { TechnologyChartProps } from "./types";
 import { useTechnologyLogic } from "./logic";
 
-Chart.register(CategoryScale);
-
 export const TechnologyChart: FC<TechnologyChartProps> = (props) => {
   const { value: isChartVisible, turnOn: showChart } = useBinnary(false);
   const {
-    chartData,
+    targetElementRef,
     isFrontendVisible,
     toggleFrontendVisiability,
     isBackendVisible,
@@ -57,23 +53,13 @@ export const TechnologyChart: FC<TechnologyChartProps> = (props) => {
               onChange={toggleMobileVisibility}
             />
           </div>
-          <Bar
-            data={chartData}
-            options={{
-              plugins: {
-                title: {
-                  display: true,
-                  text: "I have worked with different technologies in web development.",
-                },
-                legend: {
-                  display: false,
-                },
-              },
-              indexAxis: "x",
-            }}
-          />
         </>
       )}
+      <div className={cn({
+        hidden: !isChartVisible,
+        "h-0": !isChartVisible,
+        "h-fit": isChartVisible,
+      })} ref={targetElementRef} />
     </>
   );
 };

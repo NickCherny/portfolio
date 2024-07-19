@@ -1,5 +1,14 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { convertHEXToRGB } from "~/utils/ui/color.utils";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
+import * as d3 from "d3";
+import * as Plot from "@observablehq/plot";
+
 import { useBinnary } from "~/utils/hooks";
 
 import { TechnologyChartProps } from "./types";
@@ -12,10 +21,11 @@ import {
   MOBILE_TECHNOLOGY,
 } from "./technology.constants";
 
-const getBackgroundColor = (color: string) =>
-  `rgba(${convertHEXToRGB(color).join(", ")}, 0.4)`;
+const ratio = 3;
 
 export const useTechnologyLogic = ({ items }: TechnologyChartProps) => {
+  const targetElementRef = useRef<HTMLDivElement>(null);
+
   const { value: isFrontendVisible, toggle: toggleFrontendVisiability } =
     useBinnary(true);
   const { value: isBackendVisible, toggle: toggleBackendVisiability } =
@@ -32,28 +42,6 @@ export const useTechnologyLogic = ({ items }: TechnologyChartProps) => {
       ) ?? [],
     [whiteList, items?.data]
   );
-
-  const chartData = useMemo(() => {
-    return {
-      labels: filteredTechnology.map(({ attributes }) => attributes.copy),
-      datasets: [
-        {
-          label: "Level",
-          data: filteredTechnology.map(({ attributes }) => attributes.level),
-          backgroundColor: filteredTechnology.map(
-            ({ attributes }) =>
-              getBackgroundColor(palette[attributes.code?.name!]) ?? "grey"
-          ),
-          borderColor: filteredTechnology.map(
-            ({ attributes }) => palette[attributes.code?.name!] ?? "black"
-          ),
-          borderWidth: 1,
-          barPercentage: 0.7,
-          base: 0,
-        },
-      ],
-    };
-  }, [filteredTechnology]);
 
   const filterWhiteList = useCallback((state: boolean, items: string[]) => {
     if (state) {
@@ -73,8 +61,41 @@ export const useTechnologyLogic = ({ items }: TechnologyChartProps) => {
     filterWhiteList(isMobileVisible, MOBILE_TECHNOLOGY);
   }, [isFrontendVisible, isBackendVisible, isMobileVisible, filterWhiteList]);
 
+  useLayoutEffect(() => {
+    const clientWidth = document.body.clientWidth;
+
+    const plot = Plot.plot({
+      width: clientWidth,
+      height: clientWidth / ratio,
+      y: {
+        label: "Level",
+        domain: [
+          0,
+          d3.max(filteredTechnology, (d) => d.attributes.level) as number,
+        ],
+        grid: true,
+      },
+      marks: [
+        Plot.barY(filteredTechnology, {
+          x: (d) => d.attributes.copy,
+          y: (d) => d.attributes.level,
+          fill: (d) => palette[d.attributes.code?.name] ?? "currentColor",
+          fillOpacity: 0.3,
+          stroke: (d) => palette[d.attributes.code?.name] ?? "currentColor",
+          strokeWidth: 1,
+          sort: { x: "x" },
+        }),
+      ],
+    });
+
+    targetElementRef.current?.appendChild(plot);
+
+    return () => plot.remove();
+  }, [filteredTechnology]);
+
   return {
-    chartData,
+    whiteList,
+    targetElementRef,
     isFrontendVisible,
     toggleFrontendVisiability,
     isBackendVisible,

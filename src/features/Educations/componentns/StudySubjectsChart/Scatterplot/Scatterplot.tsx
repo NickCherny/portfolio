@@ -1,94 +1,154 @@
 "use client";
 
-import { useMemo } from "react";
+import { useRef, useLayoutEffect, useMemo, useState, useEffect } from "react";
 import * as d3 from "d3";
+import { makeColorOpacityOn } from "~/utils/ui/color.utils";
+import { useBinnary } from "~/utils/hooks";
 
-import { AxisLeft } from "./components/AxisLeft";
-import { AxisBottom } from "./components/AxisBottom";
+import { ScatterplotTooltip } from "./components/ScatterplotTooltip";
+import { ScatterplotProps, TooltipCopy, RowData } from "./Scatterplot.types";
 
-type ScatterplotProps = {
-  width: number;
-  height: number;
-  data: { x: number; y: number; group: string }[];
-};
-
-const MARGIN = { top: 60, right: 60, bottom: 60, left: 60 };
-
-export const Scatterplot = ({ width, height, data }: ScatterplotProps) => {
-  const boundsWidth = width - MARGIN.right - MARGIN.left;
-  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
-
-  const scaleX = useMemo(() => {
-    return d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.x) as number])
-      .range([0, width]);
-  }, [data, width]);
-  
-  const scaleY = useMemo(() => {
-    return d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.y) as number])
-      .range([0, height]);
-  }, [data, height]);
-
-  const allGroups = data.map((d) => String(d.group));
-  const colorScale = d3
-    .scaleOrdinal<string>()
-    .domain(allGroups)
-    .range(["#6689c6", "#9a6fb0", "#a53253"]);
-
-  const allShapes = data.map((d, i) => {
-    return (
-      <circle
-        key={i}
-        r={8}
-        cx={scaleX(d.x)}
-        cy={scaleY(d.y)}
-        stroke={colorScale(d.group)}
-        fill={colorScale(d.group)}
-        fillOpacity={0.7}
-      />
-    );
+export const Scatterplot = ({
+  width: viewBoxWidth,
+  height: viewBoxHeight,
+  data,
+}: ScatterplotProps) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const {
+    value: isTooltipVisible,
+    turnOff: hideTooltip,
+    turnOn: showTooltip,
+  } = useBinnary(false);
+  const [toltipe, setToltipe] = useState({
+    left: 0,
+    top: 0,
+  });
+  const [tooltipCopy, setTooltipCopy] = useState<TooltipCopy>({
+    title: "",
+    message: "",
   });
 
+  const margin = useMemo(() => {
+    const maxZ = d3.max(data.map(({ z }) => z)) as number;
+    const step = 2 * maxZ;
+
+    return { top: step, right: step + 10, bottom: step + 30, left: step };
+  }, [data]);
+
+  const [width, height] = useMemo(
+    () => [
+      viewBoxWidth - margin.left - margin.right,
+      viewBoxHeight - margin.top - margin.bottom,
+    ],
+    [viewBoxWidth, viewBoxHeight, margin]
+  );
+
+  useLayoutEffect(() => {
+    const svg = d3.select(svgRef.current);
+
+    svg.attr("width", width).attr("height", height);
+
+    // Add X axis
+    const x = d3
+      .scalePow()
+      .domain([0, (d3.max(data.map(({ x }) => x)) as number) + margin.left])
+      .range([0, width - margin.right - margin.left]);
+
+    svg
+      .append("g")
+      .attr(
+        "transform",
+        `translate(${margin.right}, ${height - margin.bottom + margin.top})`
+      )
+      .attr("data-testid", "x-axis")
+      .attr("class", "text-xs")
+      .call(d3.axisBottom(x));
+
+    // Add Y axis
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(data.map(({ y }) => y)) as number])
+      .range([height - margin.bottom, 0]);
+
+    console.log(y);
+
+    svg
+      .append("g")
+      .attr("transform", `translate(${margin.right}, ${margin.top})`)
+      .attr("data-testid", "y-axis")
+      .attr("class", "text-xs")
+      .call(d3.axisLeft(y));
+
+    // Color scale: give me a specie name, I return a color
+    const color = d3
+      .scaleOrdinal()
+      .domain([
+        "Institute of Modern Knowledge",
+        "Belarusian State University of Informatics and Radio-electronics",
+      ])
+      .range(["#440154ff", "#21908dff"]);
+
+    // Add dots
+    svg
+      .append("g")
+      .attr("transform", `translate(${margin.right}, ${margin.bottom})`)
+      .selectAll("dot")
+      .data(data)
+      .join("circle")
+      .on("mouseover", (event, d) => {
+        setTooltipCopy({
+          title: d.group,
+          message: d.subject,
+        });
+
+        showTooltip();
+      })
+      .on("mouseleave", (e) => {
+        hideTooltip();
+      })
+      .attr("cx", (d) => x(d.x))
+      .attr("cy", (d) => y(d.y))
+      .transition()
+      .ease(d3.easeCubic)
+      .attr("r", (d) => d.z * 2)
+      .attr("stroke", (d) => makeColorOpacityOn(color(d.group) as string, 0.5))
+      .attr("stroke-width", 0.5)
+      .style("fill", (d: RowData) =>
+        makeColorOpacityOn(color(d.group) as string, 1 / d.z)
+      );
+  }, [data, width, height, margin, showTooltip, hideTooltip]);
+
+  useEffect(() => {
+    function updateToltipePosition(event: MouseEvent) {
+      setToltipe((prev) => {
+        const canvas = svgRef.current?.getBoundingClientRect()!;
+
+        return {
+          ...prev,
+          left: event.clientX - canvas.x + 16,
+          top: event.clientY - canvas.y + 16,
+        };
+      });
+    }
+
+    window.addEventListener("mousemove", updateToltipePosition);
+
+    return () => {
+      window.removeEventListener("mousemove", updateToltipePosition);
+    };
+  }, []);
 
   return (
-    <div style={{ position: "relative" }}>
-      <svg width={width} height={height}>
-        <g
-          width={boundsWidth}
-          height={boundsHeight}
-          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
-        >
-          {/* Y axis */}
-          <AxisLeft yScale={scaleY} pixelsPerTick={40} width={boundsWidth} />
-
-          {/* X axis, use an additional translation to appear at the bottom */}
-          <g transform={`translate(0, ${boundsHeight})`}>
-            
-          </g>
-
-          {/* Circles */}
-          {allShapes}
-        </g>
-      </svg>
-
-      {/* Tooltip */}
-      <div
-        style={{
-          width: boundsWidth,
-          height: boundsHeight,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          pointerEvents: "none",
-          marginLeft: MARGIN.left,
-          marginTop: MARGIN.top,
-        }}
-      >
-        {/* <Tooltip interactionData={hovered} /> */}
-      </div>
+    <div style={{ position: "relative", backgroundColor: "white" }}>
+      <svg ref={svgRef} />
+      <ScatterplotTooltip
+        ref={tooltipRef}
+        isTooltipVisible={isTooltipVisible}
+        title={tooltipCopy.title}
+        message={tooltipCopy.message}
+        position={toltipe}
+      />
     </div>
   );
 };

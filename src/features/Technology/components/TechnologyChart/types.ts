@@ -1,4 +1,4 @@
-import { APIResponseCollection } from "~/types/strapi";
+import { APIResponseCollection, APIResponseData } from "~/types/strapi";
 
 type PastProjectsTechnology = {
   startDate: string;
@@ -10,3 +10,5 @@ export type TechnologyChartProps = {
   items: APIResponseCollection<"api::technology.technology">;
   pastProjects: PastProjectsTechnology[];
 };
+
+export type ItemData = APIResponseData<"api::technology.technology">;

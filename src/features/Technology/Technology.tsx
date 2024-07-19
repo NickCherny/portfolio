@@ -10,7 +10,7 @@ import {
 import { TechnologyCardProps } from "./types";
 
 const TechnologyCard: FC<TechnologyCardProps> = ({ data }) => {
-  const logoUrl = data.attributes.logo?.image?.data.attributes.url;
+  const logoUrl = data?.attributes?.logo?.image?.data?.attributes?.url;
   const imageUrl = logoUrl ? getImageUrl(logoUrl) : undefined;
 
   return (

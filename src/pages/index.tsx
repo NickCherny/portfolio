@@ -11,6 +11,7 @@ import { Summary } from "~/features/summary";
 import { Technology } from "~/features/Technology";
 import { Projects } from "~/features/Projects";
 import { Eductaions } from "~/features/Educations";
+import { Scatterplot } from "~/features/Educations/componentns/StudySubjectsChart/Scatterplot";
 
 export type HomeProps = {
   pastProjects: APIResponseCollection<"api::past-project.past-project">;
@@ -63,6 +64,22 @@ export default function Home({
         }) ?? [],
     };
   });
+
+  const chartData = eductions.data.reduce(
+    (acc, { attributes: { name, subject } }) => {
+      return [
+        ...acc,
+        ...subject.map((s) => ({
+          y: s.score,
+          x: s.houres,
+          z: s.score,
+          group: name,
+          subject: s.label,
+        })),
+      ];
+    },
+    [] as { x: number; y: number; group: string }[]
+  );
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">

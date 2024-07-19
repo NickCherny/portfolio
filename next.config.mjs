@@ -3,7 +3,14 @@ const nextConfig = {
   output: "export",
   images: {
     unoptimized: true,
-    domains: [process.env.MEDIA_HOST],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_HOST}:path*`,
+      },
+    ];
   },
 };
 

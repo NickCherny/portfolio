@@ -1,1 +1,0 @@
-export { AxisBottom } from "./AxisBottom";

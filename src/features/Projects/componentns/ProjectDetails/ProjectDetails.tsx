@@ -16,7 +16,8 @@ const ListOfTechnology: FC<ListOfTechnologyProps> = ({ items }) => {
   return (
     <div className="flex flex-row">
       {items.map(({ logo }) => {
-        if (!logo) return null;
+        const logoUrl = logo?.image?.data?.attributes?.url;
+        if (!logoUrl) return null;
 
         const key = `${logo.id}--${logo?.image.data?.id}`;
 
@@ -24,7 +25,7 @@ const ListOfTechnology: FC<ListOfTechnologyProps> = ({ items }) => {
           <div key={key}>
             <Image
               alt={logo?.alt}
-              src={getImageUrl(logo.image.data.attributes.url)}
+              src={getImageUrl(logoUrl)}
               width={28}
               height={28}
               className="mx-2"

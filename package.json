@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "build:prod": "MEDIA_HOST=\"/\" npm run build",
-    "deploy": "aws --profile nick_cherny s3 rm s3://nick-cherny--portfolio/ --recursive && aws --profile nick_cherny s3 cp ./out/ s3://nick-cherny--portfolio/ --recursive && npm run upload:images",
+    "clean": "aws --profile nick_cherny s3 rm s3://nick-cherny--portfolio/ --recursive",
+    "deploy": "aws --profile nick_cherny s3 cp ./out/ s3://nick-cherny--portfolio/ --recursive",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start",
-    "upload:images": "aws --profile nick_cherny s3 cp ../cms/public/uploads/ s3://nick-cherny--portfolio/uploads/ --recursive"
+    "start": "next start"
   },
   "dependencies": {
+    "@observablehq/plot": "^0.6.15",
     "chart.js": "^4.4.2",
     "classnames": "^2.5.1",
     "d3": "^7.9.0",
