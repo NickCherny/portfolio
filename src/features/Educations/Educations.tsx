@@ -17,7 +17,7 @@ export const Eductaions: FC<EducationsProps> = ({ items }) => {
         ...subject.map((s) => ({
           y: s.score,
           x: s.houres,
-          z: s.score,
+          z: s.score * 10,
           group: name,
           subject: s.label,
         })),
@@ -53,7 +53,7 @@ export const Eductaions: FC<EducationsProps> = ({ items }) => {
         </button>
       )}
       {isSubjectsChartVisible && (
-        <Scatterplot width={800} height={600} data={chartData} />
+        <Scatterplot data={chartData} />
       )}
     </section>
   );

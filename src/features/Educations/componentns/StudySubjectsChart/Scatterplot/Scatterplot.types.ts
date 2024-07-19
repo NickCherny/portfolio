@@ -7,8 +7,6 @@ export type RowData = {
 };
 
 export type ScatterplotProps = {
-  width: number;
-  height: number;
   data: RowData[];
 };
 
